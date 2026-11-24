@@ -45,14 +45,33 @@ def pick():
     return best[0]
 
 
-def main():
-    word = pick()
-    assert 1 <= len(word) <= 30, "word must be 1-30 characters"
-    assert " " not in word, "word must be a single word"
-    out_dir = "/output"
-    os.makedirs(out_dir, exist_ok=True)
-    with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
+# The gate allows 1-30 characters and a single word with no spaces.
+MAX_WORD_LENGTH = 30
+
+
+def validate_word(word):
+    if not 1 <= len(word) <= MAX_WORD_LENGTH:
+        raise ValueError("word must be 1-30 characters")
+    if any(ch.isspace() for ch in word):
+        raise ValueError("word must be a single word with no spaces")
+    if not word.isalpha():
+        raise ValueError("word must be letters only")
+    return word
+
+
+# Where the grader reads the entry from.
+ENTRY_PATH = os.path.join("/output", "entry.txt")
+
+
+def write_entry(word):
+    os.makedirs(os.path.dirname(ENTRY_PATH), exist_ok=True)
+    with open(ENTRY_PATH, "w", encoding="utf-8") as f:
         f.write(word)
+
+
+def main():
+    word = validate_word(pick())
+    write_entry(word)
 
 
 if __name__ == "__main__":
